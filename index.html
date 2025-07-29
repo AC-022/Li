@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carrossel Musical - Galeria Expandida</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #e74c3c;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Galeria de miniaturas no topo */
+    #thumbnailGallery {
+      display: flex;
+      justify-content: center;
+      background: None;
+      padding: 10px 0;
+      gap: 15px;
+      overflow-x: auto;
+    }
+
+    #thumbnailGallery img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    #thumbnailGallery img.selected {
+      border-color: white;
+    }
+
+    /* Área principal onde mostra a imagem expandida */
+    #mainDisplay {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transition: background-color 0.5s ease;
+    }
+
+    .circle {
+      width: 400px;
+      height: 400px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      border: 8px solid white;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      animation: spin 9s linear infinite;
+      cursor: default;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Para deixar a barra de rolagem das miniaturas mais discreta */
+    #thumbnailGallery::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    #thumbnailGallery::-webkit-scrollbar-track {
+      background: None;
+    }
+
+    #thumbnailGallery::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Galeria de miniaturas -->
+  <div id="thumbnailGallery">
+    <!-- Miniaturas serão criadas dinamicamente -->
+  </div>
+
+  <!-- Área principal de exibição -->
+  <div id="mainDisplay">
+    <div id="circle" class="circle"></div>
+  </div>
+
+  <!-- Áudio -->
+  <audio id="player" autoplay loop style="display:none">
+    <source id="audioSource" src="" type="audio/mpeg" />
+    Seu navegador não suporta áudio.
+  </audio>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Dados dos discos
+    const discs = [
+      {
+        music: "https://media.vocaroo.com/mp3/1kp8WHUfQlSo",
+        image: "https://i.ibb.co/n8LwXbyy/Mulher-e-guia-em-Retrato-Art-stico.png",
+        bg: "#e74c3c"
+      },
+      {
+        music: "https://media.vocaroo.com/mp3/15wZdE9l5mIx",
+        image: "https://i.ibb.co/n8LwXbyy/Mulher-e-guia-em-Retrato-Art-stico.png",
+        bg: "#2ecc71"
+      },
+      {
+        music: "https://media.vocaroo.com/mp3/13k2BcXiOD4F",
+        image: "https://i.ibb.co/F4Q9DFMH/Chat-GPT-Image-Jul-13-2025-03-44-25-PM.png",
+        bg: "#ffcbdb"
+      }
+    ];
+
+    const thumbnailGallery = document.getElementById('thumbnailGallery');
+    const circle = document.getElementById('circle');
+    const audio = document.getElementById('player');
+    const source = document.getElementById('audioSource');
+    const mainDisplay = document.getElementById('mainDisplay');
+
+    // Função para limpar seleção
+    function clearSelection() {
+      const imgs = thumbnailGallery.querySelectorAll('img');
+      imgs.forEach(img => img.classList.remove('selected'));
+    }
+
+    // Função para carregar disco selecionado
+    function loadDisc(index) {
+      const disc = discs[index];
+      if (!disc) return;
+
+      // Atualiza música
+      source.src = disc.music;
+      audio.load();
+      audio.play();
+
+      // Atualiza imagem do círculo
+      circle.style.backgroundImage = `url('${disc.image}')`;
+
+      // Atualiza background do mainDisplay e body
+      mainDisplay.style.backgroundColor = disc.bg;
+      document.body.style.backgroundColor = disc.bg;
+
+      // Marca como selecionada a miniatura
+      clearSelection();
+      const imgs = thumbnailGallery.querySelectorAll('img');
+      if (imgs[index]) imgs[index].classList.add('selected');
+    }
+
+    // Criar miniaturas dinamicamente
+    discs.forEach((disc, i) => {
+      const img = document.createElement('img');
+      img.src = disc.image;
+      img.alt = `Disco ${i + 1}`;
+      img.title = `Disco ${i + 1}`;
+      img.addEventListener('click', () => loadDisc(i));
+      thumbnailGallery.appendChild(img);
+    });
+
+    // Inicializar com o primeiro disco
+    loadDisc(0);
+  </script>
+
+</body>
+
+</html>
